@@ -2,6 +2,7 @@
 using SuppliersManagement.Application.Interfaces;
 using SuppliersManagement.Common.Entities;
 using SuppliersManagement.Common.Exceptions;
+using SuppliersManagement.Common.Response;
 using SuppliersManagement.Domain.Dtos;
 using SuppliersManagement.Domain.Entities;
 using SuppliersManagement.Infrastructure.Repositories;
@@ -19,7 +20,7 @@ namespace SuppliersManagement.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Supplier>> FindAllASync(FindQuery query)
+        public async Task<FindAllResponse<Supplier>> FindAllASync(FindQuery query)
         {
             return await _supplierRepository.GetAllAsync(query);
         }
@@ -93,6 +94,8 @@ namespace SuppliersManagement.Application.Services
             }
 
             supplier.Name = supplierDto.Name;
+            supplier.LegalName = supplierDto.LegalName;
+            supplier.TaxIdentification = supplierDto.TaxIdentification;
             supplier.Phone = supplierDto.Phone;
             supplier.Email = supplierDto.Email;
             supplier.Website = supplierDto.Website;

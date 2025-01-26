@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SuppliersManagement.Application.Interfaces;
 using SuppliersManagement.Common.Entities;
+using SuppliersManagement.Common.Response;
 using SuppliersManagement.Domain.Dtos;
 using SuppliersManagement.Domain.Entities;
 using Swashbuckle.AspNetCore.Annotations;
@@ -25,7 +26,7 @@ namespace SuppliersManagement.Controllers
             Description = "Returns a list of all suppliers available in the system."
         )]
         [SwaggerResponse(200, "Successfully retrieved the list of suppliers.")]
-        public async Task<IEnumerable<Supplier>> FindAll([FromQuery] FindQuery query)
+        public async Task<FindAllResponse<Supplier>> FindAll([FromQuery] FindQuery query)
         {
             return await _supplierService.FindAllASync(query);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SuppliersManagement.Common.Entities;
+using SuppliersManagement.Common.Response;
 using SuppliersManagement.Domain.Entities;
 using SuppliersManagement.Infrastructure.Contexts;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -15,7 +16,7 @@ namespace SuppliersManagement.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Supplier>> GetAllAsync(FindQuery query)
+        public async Task<FindAllResponse<Supplier>> GetAllAsync(FindQuery query)
         {
             var suppliersQuery = _context.Suppliers.AsQueryable();
 
@@ -74,7 +75,24 @@ namespace SuppliersManagement.Infrastructure.Repositories
                 suppliersQuery = suppliersQuery.OrderByDescending(s => s.UpdatedDate);
             }
 
-            return await suppliersQuery.ToListAsync();
+            query.Page = query.Page < 1 ? 1 : query.Page;
+            query.PageSize = query.PageSize < 1 ? 10 : query.PageSize;
+
+            suppliersQuery = suppliersQuery
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize);
+
+            int totalItems = await _context.Suppliers.CountAsync();
+            int lastPage = (int)Math.Ceiling((double)totalItems / query.PageSize);
+
+            return new FindAllResponse<Supplier>
+            {
+                Data = await suppliersQuery.ToListAsync(),
+                FirstPage = 1,
+                LastPage = lastPage,
+                Page = query.Page,
+                PageSize = query.PageSize
+            };
 
         }
 
